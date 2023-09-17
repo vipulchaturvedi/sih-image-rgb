@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Image Processing</title>
+</head>
+<body>
+    <h1>Image Processing</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" name="image" accept="image/*" required>
+        <button type="submit">Upload Image</button>
+    </form>
+
+    <div id="result">
+        <h2>Processed Image</h2>
+        <img id="processedImage" src="" alt="Processed Image">
+        <p>Number of Black Pixels: <span id="blackPixelCount">-</span></p>
+    </div>
+
+    <script>
+        const uploadForm = document.getElementById('uploadForm');
+        const processedImage = document.getElementById('processedImage');
+        const blackPixelCount = document.getElementById('blackPixelCount');
+
+        uploadForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(uploadForm);
+
+            try {
+                const response = await fetch('https://api-image-rgb-seg.vipulchaturvedi.workers.dev/', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    processedImage.src = URL.createObjectURL(blob);
+                    const blackPixels = response.headers.get('X-Black-Pixels');
+                    blackPixelCount.textContent = blackPixels;
+                } else {
+                    alert('Image processing failed. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while processing the image.');
+            }
+        });
+    </script>
+</body>
+</html>
