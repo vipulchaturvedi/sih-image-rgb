@@ -32,10 +32,22 @@ function processImage() {
       let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
       let blackPixelCount = 0;
 
-      for (let i = 0; i < imageData.data.length; i += 4) {
-        let gray = imageData.data[i + 1] // Keep only green channel
+      // Assuming imageData.data is an array representing image data
+let totalGreen = 0;  // Variable to store the sum of green channel values
 
-        if (gray < 130 ) {
+for (let i = 1; i < imageData.data.length; i += 4) {
+  totalGreen += imageData.data[i];  // Accumulate green channel values
+}
+
+// Calculate the mean green value
+const meanGreen = totalGreen / (imageData.data.length / 4);
+
+console.log('Mean green channel value:', meanGreen);
+
+      for (let i = 0; i < imageData.data.length; i += 4) {
+        let gray = (imageData.data[i + 1])*0.587 // Keep only green channel
+
+        if (gray < meanGreen/1.5 ) {
           gray = 0
           blackPixelCount++
         } else {
